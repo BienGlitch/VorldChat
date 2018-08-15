@@ -1,0 +1,121 @@
+/* General Section */
+
+a {
+    text-decoration: none !important
+}
+
+body {
+    margin: 0 auto 0 auto !important;
+    margin-top: 56px !important;
+    padding: 3px;
+    width: 99.999%;
+}
+
+.form-control {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: none !important;
+    border-radius: 0 !important;
+    border-bottom: 2px solid grey !important
+}
+
+.form-control:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: none !important;
+    border-bottom: 2px solid #007bff !important
+}
+
+
+/* Navbar style */
+
+.nav-item a {
+    color: white !important;
+}
+
+.nav-item a:hover {
+    color: rgb(48, 48, 48) !important
+}
+
+.navbar-brand:hover {
+    color: black !important
+}
+
+.nav-link:hover>.fa-unlock-alt::before {
+    content: "\f09c" !important
+}
+
+@media (max-width: 767px) {
+    .nav-item h2 {
+        font-size: 16px !important;
+    }
+}
+
+
+/* Password Change Page */
+
+.pwrdch input[placeholder]::placeholder {
+    color: lightgrey !important;
+}
+
+
+/* Profiles Page */
+
+.profileBody {
+    margin-top: -50px !important
+}
+
+.profilebg {
+    padding-top: 200px;
+}
+
+.profilebg>.profiledp img {
+    height: 200px;
+}
+
+.pFriends img {
+    height: 70px;
+}
+
+.table td {
+    border-top: none !important;
+    padding: 2px !important
+}
+
+.table td:first-child {
+    width: 5px !important;
+    padding-right: 1px !important;
+}
+
+.pFriends hr {
+    margin-top: 20px !important;
+    margin-bottom: 0px !important;
+    border: 0;
+    width: 100% !important;
+    bottom: 100 !important;
+    border-top: 1px solid rgba(0, 0, 0, .1)
+}
+
+@media (max-width:768px) {
+    .pFriends img {
+        height: 100px;
+    }
+}
+
+@media (min-width:768px) {
+    .otherUser {
+        border-left: 1px solid lightgrey;
+    }
+    .pFriends .photo,
+    .contents div {
+        width: 96%;
+    }
+    .border-md-right {
+        border-right: 2px solid #dee2e6 !important;
+    }
+    .border-md-left {
+        border-left: 2px solid #dee2e6 !important;
+    }
+}
