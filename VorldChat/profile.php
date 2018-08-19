@@ -5,11 +5,12 @@
     date_default_timezone_set("Africa/Lagos");
 
     $UID = "";
-
-    if(isset($_GET['id'])){
+    $u = "";
+    if(isset($_GET['id']) && isset($_GET['U'])){
         #code...
         // Get its value and store it in $UID
         $UID = @$_GET['id']; ## Assign URL Paremeter 'id' to Variable $id
+        $u = $_GET['U']; ## Assign URL Paremeter 'U' to Variable $u
     }
     else{
         echo "BAD REQUEST";
@@ -17,7 +18,6 @@
     }
 
 ?>
-
 <?php
     //Check if user exists
     $get_user = "SELECT * FROM `users` WHERE `id` = '$UID'";
@@ -27,6 +27,8 @@
     $username = $get['username'];
     $fname = $get['first_name'];
     $lname = $get['last_name'];
+
+    $_SESSION['username'] = $u;
 
     $name = $fname . ' ' . $lname;
     
@@ -234,74 +236,99 @@
                 </div>
                 <br />
                 <div class="row">
-                    <div class="col-md-4 card shadow profile pt-0 px-4 text-center">
-                        <?php
-                            if ($username == $user) {
-                                # code...
-                                ?>
-                                <span class="text-capitalize text-muted">your friends</span>
+                    <div class="col-md-4 pFriends p-0">
+                        <div class="col-12 p-0">
+                            <div class="card shadow photo">
                                 <?php
-                            }
-                            else{
+                                    include("inc/friendarrayqueryinc.php");
+                                    if ($username == $user) {
+                                        # code...
+                                        ?>
+                                        <div class="pl-3 pt-3">
+                                            <i class="bg-primary rounded-circle img-thumbnail fa fa-group"></i>
+                                            <span class="text-capitalize text-muted"> Your Friends</span>
+                                            <?php echo $countFriends; ?>
+                                        </div>
+                                        <hr>
+                                        <?php
+                                    }
+                                    else{
+                                        ?>
+                                        <div class="pl-3 pt-3">
+                                            <i class="bg-primary rounded-circle img-thumbnail fa fa-group"></i>
+                                            <span class="text-capitalize text-muted"><?php echo "$username's"; ?> Friends</span>
+                                            <?php echo $countFriends; ?>
+                                        </div>
+                                        <hr>
+                                        <?php
+                                    }
                                 ?>
-                                <span class="text-capitalize text-muted"><?php echo "$username's"; ?> Friends</span>
-                                <?php
-                            }
-                        ?>
-                        <div class="row flex-row">
-                            <?php
-                                include("inc/friendarrayqueryinc.php");
-                                if($countFriends != 0){
-                                    foreach($userfriendArray12 as $key => $value){
-                                        $i++;
-                                        $getFriendQuery = "SELECT * FROM `users` WHERE `username`='$value' LIMIT 12";
-                                        $getFriendQuery_sqli = mysqli_query($connect, $getFriendQuery);
-                                        $getFriendRow = mysqli_fetch_assoc($getFriendQuery_sqli);
-                                        $friendId = $getFriendRow['id'];
-                                        $friendUsername = $getFriendRow['username'];
-                                        $friendProfilePic = $getFriendRow['profile_pic'];
-                                        
-                                        if($friendProfilePic == ""){
-                                            ?>
-                                            <div class="col-4 py-2 p-1">
-                                                <a href="<?php echo "profile?id=$friendId"; ?>">
-                                                    <img src="img\default_pP.png" alt="<?php echo "$friendUsername's profile" ?>" title="<?php echo "$friendUsername's profile" ?>"  width="100%" />
-                                                    <?php echo $friendUsername; ?>
-                                                </a>
-                                            </div>
-                                            <?php
-                                        }
-                                        else{
-                                            ?>
-                                            <div class="col-4 py-2 p-1">
-                                                        <a href="<?php echo "profile?id=$friendId"; ?>">
-                                                            <img src="<?php echo $friendProfilePic ?>" alt="<?php echo "$friendUsername's profile" ?>" title="<?php echo "$friendUsername's profile" ?>" width="100%" />
+                                <div class="row flex-row px-4 text-left">
+                                    <?php
+                                        include("inc/friendarrayqueryinc.php");
+                                        if($countFriends != 0){
+                                            foreach($userfriendArray12 as $key => $value){
+                                                $i++;
+                                                $getFriendQuery = "SELECT * FROM `users` WHERE `username`='$value' LIMIT 12";
+                                                $getFriendQuery_sqli = mysqli_query($connect, $getFriendQuery);
+                                                $getFriendRow = mysqli_fetch_assoc($getFriendQuery_sqli);
+                                                $friendId = $getFriendRow['id'];
+                                                $friendUsername = $getFriendRow['username'];
+                                                $friendProfilePic = $getFriendRow['profile_pic'];
+                                                
+                                                if($friendProfilePic == ""){
+                                                    ?>
+                                                    <div class="col-4 py-2 p-1">
+                                                        <a href="<?php echo "profile?id=$friendId&U=$friendUsername"; ?>">
+                                                            <img src="img\default_pP.png" alt="<?php echo "$friendUsername's profile" ?>" title="<?php echo "$friendUsername's profile" ?>"  width="100%" />
                                                             <small><?php echo $friendUsername; ?></small>
                                                         </a>
                                                     </div>
-                                            <?php                            
+                                                    <?php
+                                                }
+                                                else{
+                                                    ?>
+                                                    <div class="col-4 py-2 p-1">
+                                                        <a href="<?php echo "profile?id=$friendId&U=$friendUsername"; ?>">
+                                                            <img class="img-responsive" src="<?php echo $friendProfilePic ?>" alt="<?php echo "$friendUsername's profile" ?>" title="<?php echo "$friendUsername's profile" ?>" width="100%" />
+                                                            <small><?php echo $friendUsername; ?></small>
+                                                        </a>
+                                                    </div>
+                                                    <?php                            
+                                                }
+                                            }
+                                        }
+                                        else{
+                                            ?>
+                                            <?php echo "$username " ?> has no friends yet.
+                                            <?php
+                                            exit();
+                                        }
+                                    ?>
+                                </div>
+                                <?php
+                                    if ($countFriends > 9) {
+                                        # code...
+                                        if ($user == $username) {
+                                            # code...
+                                            ?>
+                                            <hr>
+                                            <a href="" class="nav-link text-black-50">See All Friends ></a>
+                                            <?php
                                         }
                                     }
-                                }
-                                else{
-                                    ?>
-                                    <?php echo "$username " ?> has no friends yet.
-                                    <?php
-                                    exit();
-                                }
-                            ?>
+                                    elseif ($countFriends < 10) {
+                                        # code...
+                                        if ($user == $username) {
+                                            # code...
+                                            ?>
+                                            <hr>&nbsp;
+                                            <?php
+                                        }
+                                    }
+                                ?>
+                            </div>
                         </div>
-                        <?php
-                            if ($countFriends > 12) {
-                                # code...
-                                if ($user == $username) {
-                                    # code...
-                                    ?>
-                                    <a href="" class="nav-link">View All</a>
-                                    <?php
-                                }
-                            }
-                        ?>
                     </div>
                 </div>
             </div>
@@ -355,7 +382,7 @@
                     </div>
                 </div>
                 <div class="bg-light p-1 shadow-sm row">
-                    <div class="col-md-7  border-md-left">
+                    <div class="col-md-7 border-md-left">
                         <div class="row">
                             <div class="container-fluid p-0">
                                 <div class="col-12 card p-2 text-center text-black-50 shadow-lg">
@@ -404,8 +431,8 @@
                     </div>
                 </div>
                 <br />
-                <div class="row">
-                    <div class="col-md-4 pFriends p-0">
+                <div class="row pFriends">
+                    <div class="col-md-4 p-0">
                         <div class="col-12 p-0">
                             <div class="card shadow photo">
                                 <?php
@@ -427,69 +454,71 @@
                                         <?php
                                     }
                                 ?>
-                                <div class="row flex-row px-4 text-left">
-                                    <?php
-                                        if($countFriends != 0){
-                                            foreach($friendArray12 as $key => $value){
-                                                $i++;
-                                                $getFriendQuery = "SELECT * FROM `users` WHERE `username`='$value' LIMIT 12";
-                                                $getFriendQuery_sqli = mysqli_query($connect, $getFriendQuery);
-                                                $getFriendRow = mysqli_fetch_assoc($getFriendQuery_sqli);
-                                                $friendId = $getFriendRow['id'];
-                                                $friendUsername = $getFriendRow['username'];
-                                                $friendProfilePic = $getFriendRow['profile_pic'];
-                                                        
-                                                if($friendProfilePic == ""){
-                                                    ?>
-                                                    <div class="col-4 py-2 p-1">
-                                                        <a href="<?php echo "profile?id=$friendId"; ?>">
-                                                            <img src="img\default_pP.png" alt="<?php echo "$friendUsername's profile" ?>" title="<?php echo "$friendUsername's profile" ?>"  width="100%" />
-                                                            <small><?php echo $friendUsername; ?></small>
-                                                        </a>
-                                                    </div>
-                                                    <?php
-                                                }
-                                                else{
-                                                    ?>
-                                                    <div class="col-4 py-2 p-1">
-                                                        <a href="<?php echo "profile?id=$friendId"; ?>">
-                                                            <img src="<?php echo $friendProfilePic ?>" alt="<?php echo "$friendUsername's profile" ?>" title="<?php echo "$friendUsername's profile" ?>" width="100%" />
-                                                            <small><?php echo $friendUsername; ?></small>
-                                                        </a>
-                                                    </div>
-                                                    <?php                            
+                                <div class="col-12">
+                                    <div class="row flex-row px-4 text-left">
+                                        <?php
+                                            if($countFriends != 0){
+                                                foreach($friendArray12 as $key => $value){
+                                                    $i++;
+                                                    $getFriendQuery = "SELECT * FROM `users` WHERE `username`='$value' LIMIT 12";
+                                                    $getFriendQuery_sqli = mysqli_query($connect, $getFriendQuery);
+                                                    $getFriendRow = mysqli_fetch_assoc($getFriendQuery_sqli);
+                                                    $friendId = $getFriendRow['id'];
+                                                    $friendUsername = $getFriendRow['username'];
+                                                    $friendProfilePic = $getFriendRow['profile_pic'];
+                                                            
+                                                    if($friendProfilePic == ""){
+                                                        ?>
+                                                        <div class="col-4 py-2 p-1">
+                                                            <a href="<?php echo "profile?id=$friendId&U=$friendUsername"; ?>">
+                                                                <img src="img\default_pP.png" alt="<?php echo "$friendUsername's profile" ?>" title="<?php echo "$friendUsername's profile" ?>"  width="100%" />
+                                                                <small><?php echo $friendUsername; ?></small>
+                                                            </a>
+                                                        </div>
+                                                        <?php
+                                                    }
+                                                    else{
+                                                        ?>
+                                                        <div class="col-4 py-2 p-1">
+                                                            <a href="<?php echo "profile?id=$friendId&U=$friendUsername"; ?>">
+                                                                <img src="<?php echo $friendProfilePic ?>" alt="<?php echo "$friendUsername's profile" ?>" title="<?php echo "$friendUsername's profile" ?>" width="100%" />
+                                                                <small><?php echo $friendUsername; ?></small>
+                                                            </a>
+                                                        </div>
+                                                        <?php                            
+                                                    }
                                                 }
                                             }
+                                            else{
+                                                ?>
+                                                <?php echo "$username " ?> has no friends yet.
+                                                <?php
+                                                exit();
+                                            }
+                                        ?>
+                                    </div>
+                                    <?php
+                                        if ($countFriends > 9) {
+                                            # code...
+                                            if ($user !== $username) {
+                                                # code...
+                                                ?>
+                                                <hr>
+                                                <a href="" class="nav-link text-black-50">See All Friends ></a>
+                                                <?php
+                                            }
                                         }
-                                        else{
-                                            ?>
-                                            <?php echo "$username " ?> has no friends yet.
-                                            <?php
-                                            exit();
+                                        elseif ($countFriends < 10) {
+                                            # code...
+                                            if ($user !== $username) {
+                                                # code...
+                                                ?>
+                                                <hr>&nbsp;
+                                                <?php
+                                            }
                                         }
                                     ?>
                                 </div>
-                                <?php
-                                    if ($countFriends > 9) {
-                                        # code...
-                                        if ($user !== $username) {
-                                            # code...
-                                            ?>
-                                            <hr>
-                                            <a href="" class="nav-link text-black-50">See All Friends ></a>
-                                            <?php
-                                        }
-                                    }
-                                    elseif ($countFriends < 10) {
-                                        # code...
-                                        if ($user !== $username) {
-                                            # code...
-                                            ?>
-                                            <hr>&nbsp;
-                                            <?php
-                                        }
-                                    }
-                                ?>
                             </div>
                         </div>
                     </div>
@@ -499,29 +528,24 @@
                             <span class="text-capitalize text-muted"> Photos of <?php echo "$username"; ?></span>
                         </div>
                         <hr>
-                        <div class="col-12 p-0">
-                            <div class="row flex-row px-4 text-left">
-                                <div class="container p-0">
-                                    *Photos to be displayed here!!!
-                                </div>
+                        <div class="px-4 text-left">
+                            <div class="container-fluid p-0">
+                                *Photos to be displayed here!!!
                             </div>
-                            <hr>
-                            <a href="" class="nav-link text-black-50 mt-2">See All Photos ></a>
                         </div>
+                        <hr>
+                        <a href="" class="nav-link text-black-50 mt-2">See All Photos ></a>
                     </div>
                 </div>
                 <br />
                 <div class="row">
                     <div class="col-md-4 d-none d-md-block contents p-0">
                         <div class="card shadow-sm">
-                            <div class="row pl-4 p-0 text-left">
-                                <div class="container p-0">   
-                                    <?php print_r($_SESSION); ?>     
-                                    *Contents to be displayed here!!!
-                                    *Contents to be displayed here!!! *Contents to be displayed here!!! *Contents to be displayed here!!!
-                                    *Contents to be displayed here!!! *Contents to be displayed here!!! *Contents to be displayed here!!!
-                                    *Contents to be displayed here!!! *Contents to be displayed here!!! *Contents to be displayed here!!!
-                                </div>
+                            <div class="container-fluid pl-4 p-0">   
+                                *Contents to be displayed here!!!
+                                *Contents to be displayed here!!! *Contents to be displayed here!!! *Contents to be displayed here!!!
+                                *Contents to be displayed here!!! *Contents to be displayed here!!! *Contents to be displayed here!!!
+                                *Contents to be displayed here!!! *Contents to be displayed here!!! *Contents to be displayed here!!!
                             </div>
                         </div>
                     </div>
@@ -532,6 +556,8 @@
                             $err = "";
                             $send = @$_POST['send'];
                             $post = @$_POST['post'];
+                            
+                            $post = preg_replace("/\n/", "<br />", "$post");
                             
                             ##If post button is clicked/selected
                             if($send){
@@ -554,9 +580,9 @@
                         ?>
                         <form action="" method="post">
                             <div class="input-group input-group-sm">
-                                <textarea name="post" id="post" class="pl-5 pt-4 form-control" style="height:85px;width:90%" placeholder="What's Ony Your Mind"></textarea>
+                                <textarea name="post" id="post" class="pl-5 pt-4 form-control" style="height:85px;width:80%" placeholder="What's On Your Mind"></textarea>
                                 <span class="input-group-append">
-                                <button type="submit" name="send" value="post" class="btn btn-dark btn-group-lg" style="width:60.90px;height:85px">Post</button>
+                                <button type="submit" name="send" value="post" class="btn btn-dark btn-group-lg" style="10%;height:85px">Post</button>
                                 </span>
                                 <?php echo $err; ?>
                             </div>
@@ -564,139 +590,45 @@
                         <br />
                         <h5 class="text-black-50">Posts</h5>
                         <br />
-                        <div class="container-fluid p-0" style="//border:1px solid black">
-                        <?php
-                            //Get 5 posts with details from database
-                            $getposts = "SELECT * FROM `posts` WHERE `user_posted_to` = '$username' ORDER BY `id` DESC LIMIT 5" or die(mysql_error);
-                            $getposts_sqli = mysqli_query($connect, $getposts);
-                            $countPosts = mysqli_num_rows($getposts_sqli);
-                            
-                            if ($countPosts == 0) {
-                                # code...
-                                echo '
-                                    <div class="alert alert-info text-center">
+                        <div class="container-fluid p-0">
+                            <?php
+                                //Get 5 posts with details from database
+                                $getposts = "SELECT * FROM `posts` WHERE `user_posted_to` = '$username' ORDER BY `id` DESC" or die(mysql_error);
+                                $getposts_sqli = mysqli_query($connect, $getposts);
+                                $countPosts = mysqli_num_rows($getposts_sqli);
+
+                                if ($countPosts == 0) {
+                                    # code...
+                                    ?>
+                                    <div class="alert alert-info text-center" id="show">
                                         <i class="fa fa-exclamation-circle"></i>
-                                        '."$username".' has no posts on his timeline!!!<br />
+                                        <?php echo $username; ?> has no posts on his timeline!!!<br />
                                         <span class="text-danger">Be the first to post...</span>
                                     </div>
-                                ';
-                            }
-
-
-                            while ($row = mysqli_fetch_assoc($getposts_sqli)){
-                                $id = $row['id'];
-                                $body = $row['body'];
-                                $date_added = $row['date_added'];
-                                $time_added = $row['time_added'];
-                                $added_by = $row['added_by'];
-                                $user_posted_to = $row['user_posted_to'];
-                                
-                                ##Get profile pic of User who posted
-                                $get_userinfo_sql = "SELECT * FROM `users` WHERE `username`='$added_by'";
-                                $get_userinfo_sqli = mysqli_query($connect,$get_userinfo_sql);
-                                $get_info = mysqli_fetch_assoc($get_userinfo_sqli);
-                                $postedID = $get_info['id'];
-                                $profilepic_info = $get_info['profile_pic'];
-
-                                
-
-                                $d = date("Y-m-d h:i:s");
-
-                                $start = new DateTime("$d");
-                                $interval = $start ->diff(new DateTime("$time_added"));
-                                $min = $interval->days * 24 * 60;
-                                $min += $interval->h *60;
-                                $min += $interval->i;
-                                $sec = $interval->i *60;
-                                $sec += $interval->s;
-                                $hour = $interval->h;
-                                $days = $interval->days;
-                                $months = intval($days/30.5);
-                                $years = $interval->y;
-                                
-                                if (($sec) < 6) {
-                                    # code...
-                                    $interval = "Just now";
-                                }
-                                elseif (($sec) > 5 && ($sec) < 61) {
-                                    # code...
-                                    $interval = $sec."secs";
-                                }
-                                elseif (($sec) > 60 && ($min) > 0) {
-                                    # code...
-                                    $interval = $min."min";
-                                }
-                                elseif (($min) > 1 && ($min) < 61) {
-                                    # code...
-                                    $interval = $min."mins";
-                                }
-                                elseif (($min) > 60 && ($hour) > 0) {
-                                    # code...
-                                    $interval = $hour."hr";
-                                }
-                                elseif (($hour) > 1 && ($hour) < 25) {
-                                    # code...
-                                    $interval = $hour."hrs";
-                                }
-                                elseif (($hour) > 23 && ($days) > 0) {
-                                    # code...
-                                    $interval = $days."day";
-                                }
-                                elseif (($days) > 1 && ($days) < 367) {
-                                    # code...
-                                    $interval = $day."days";
-                                }
-                                elseif (($days) < 364 && ($months) > 0) {
-                                    # code...
-                                    $interval = $months."month";
-                                }
-                                elseif (($months) > 1 && ($months) < 13) {
-                                    # code...
-                                    $interval = $months."months";
-                                }
-                                elseif (($months) > 11 && ($years) > 0) {
-                                    # code...
-                                    $interval = $years."yr";
-                                }
-                                elseif (($years) > 1) {
-                                    # code...
-                                    $interval = $years."yrs";
+                                    <?php
                                 }
                                 
-                                
-                                if($profilepic_info == ""){
-                                    $profilepic_info = "userdata/profile_pics/default/default_pP.png";
-                                }
-                                else{
-                                    $profilepic_info = $profilepic_info;
-                                }
-                                if($profilepic_info == "userdata/profile_pics/default/default_pP.png"){
-                                    $profilepic_info = "userdata/profile_pics/default/default_pP.png";
-                                }
-                                
-                                ?>
-                                <div class="container-fluid shadow-sm card bg-transparent">
-                                    <div class="col-12 p-0 pt-3 pl-1">
-                                        <div class="row">
-                                            <div class="col-2 pr-2">
-                                                <img class="rounded-circle" src="<?php echo $profilepic_info; ?>" alt="<?php echo $added_by; ?>" width="100%" height="60px">
-                                            </div>
-                                            <div class="pl-0 col-10">
-                                                <a href="<?php echo "profile?id=$postedID" ?>"><?php echo $added_by ?></a><br />
-                                                <small><?php echo $interval." <sup><b>.</b></sup>"; ?> <i class="fa fa-globe"></i></small>
-                                            </div>
+                            ?>
+                            <div class="container-fluid shadow-sm card bg-transparent" id="postdiv">
+                                <div class="col-12 p-0 pt-3 pl-1">
+                                    <div class="row">
+                                        <div class="col-2 pr-2 animated infinite flash">
+                                            <canvas class="img-thumbnail rounded-circle" width="100%" height="60px"></canvas>
                                         </div>
-                                        <div class="row mt-2 mb-2">
-                                            <div class="col-12 pr-2">
-                                                <?php echo $body; ?>
-                                            </div>
+                                        <div class="pl-0 col-10 pt-1 animated infinite flash">
+                                            <canvas class="card mb-1 animated slideInRight" width="100%" height="15px"></canvas>
+                                            <canvas class="card animated slideInLeft" width="100%" height="15px"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2 mb-2 animated flash slideInLeft">
+                                        <div class="col-12 pr-2">
+                                            <canvas class="card" width="300%" height="15px"></canvas>
                                         </div>
                                     </div>
                                 </div>
-                                <br />
-                                <?php
-                            }
-                        ?>
+                            </div>
+                        </div>
+                        <div class="" id="posts">
                         </div>
                     </div>
                 </div>
@@ -706,3 +638,20 @@
         }
     ?>
 </div>
+<br />
+<br />
+
+<script type="text/javascript">
+    $(document).ready(function() {
+    	setInterval(function () {
+    		$('#posts' ).load('data.php')
+    	}, 3000);
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#postdiv').delay(3000).fadeOut();
+    });
+</script>
+
+<?php include("inc/footer.php"); ?>
